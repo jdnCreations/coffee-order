@@ -1,0 +1,47 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Drink {
+  id        Int      @id @default(autoincrement())
+  name      String
+  type      String
+  milk      String
+  size      String
+  sugar     Int
+  completed Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
+}
+
+model Post {
+  id    String @id @default(uuid())
+  title String
+  text  String
+
+  // To return `Date`s intact through the API we use transformers
+  // https://trpc.io/docs/data-transformers
+  // This is unique so it can be used for cursor-based pagination
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+  comment  Comment[]
+}
+
+model Comment {
+  id        String @id @default(uuid())
+  name      String?
+  text      String
+  postId    String
+  post      Post   @relation(fields: [postId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
