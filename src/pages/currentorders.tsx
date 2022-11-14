@@ -7,7 +7,7 @@ const CurrentOrders: NextPageWithLayout = () => {
 
   return (
     <div>
-      <h3>Current Drinks</h3>
+      <h3 className="font-bold text-2xl">Current Drinks</h3>
       {submittedOrders.data?.map((order) => (
         <div key={order.id}>
           <OrderLayout orderInfo={order} />

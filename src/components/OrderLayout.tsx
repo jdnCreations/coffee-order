@@ -1,4 +1,5 @@
 import { Order } from '@prisma/client';
+import Head from 'next/head';
 import { trpc } from '~/utils/trpc';
 
 interface OrderProps {
@@ -20,17 +21,31 @@ export const OrderLayout = ({ orderInfo }: OrderProps) => {
   }
 
   return (
-    <div>
-      <h4>{orderInfo.name}</h4>
-      {drinks.data?.map((drink) => (
-        <div key={drink.id}>
-          <h5>{drink.type}</h5>
-          <h5>{drink.size}</h5>
-          <h5>{drink.milk}</h5>
-          <h5>{drink.sugar}</h5>
-        </div>
-      ))}
-      <button onClick={() => markAsDone(orderInfo.id)}>COMPLETE</button>
+    <div className="w-full h-full">
+      <Head>
+        <title>Current Orders</title>
+      </Head>
+
+      <div className="flex flex-col gap-4 w-full h-full">
+        <h4 className="font-medium">{orderInfo.name}</h4>
+        {drinks.data?.map((drink) => (
+          <div
+            className="flex flex-row items-center justify-center w-full"
+            key={drink.id}
+          >
+            <p className="">{drink.type}</p>
+            <p>{drink.size}</p>
+            <p>{drink.milk}</p>
+            <p className="border rounded-full px-4 py-2">{drink.sugar}</p>
+          </div>
+        ))}
+        <button
+          className="border-2 bg-green-700 text-orange hover:text-red-200"
+          onClick={() => markAsDone(orderInfo.id)}
+        >
+          COMPLETE
+        </button>
+      </div>
     </div>
   );
 };
