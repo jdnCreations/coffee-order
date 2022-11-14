@@ -11,10 +11,25 @@ export const drinksRouter = router({
     });
     return items;
   }),
+  byId: publicProcedure
+    .input(
+      z.object({
+        id: z.number(),
+      }),
+    )
+    .query(async ({ input }) => {
+      const item = await prisma.drink.findUnique({
+        where: {
+          id: input.id,
+        },
+      });
+      return item;
+    }),
   create: publicProcedure
     .input(
       z.object({
         name: z.string(),
+        orderId: z.number(),
         type: z.string(),
         size: z.string(),
         milk: z.string(),
@@ -25,6 +40,7 @@ export const drinksRouter = router({
       const item = await prisma.drink.create({
         data: {
           name: input.name,
+          orderId: input.orderId,
           type: input.type,
           size: input.size,
           milk: input.milk,

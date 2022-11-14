@@ -12,36 +12,26 @@ generator client {
 
 model Drink {
   id        Int      @id @default(autoincrement())
+  order     Order   @relation(fields: [orderId], references: [id])
+  orderId   Int     
   name      String
   type      String
   milk      String
   size      String
-  sugar     Int
+  sugar     String
   completed Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   deletedAt DateTime?
 }
 
-model Post {
-  id    String @id @default(uuid())
-  title String
-  text  String
-
-  // To return `Date`s intact through the API we use transformers
-  // https://trpc.io/docs/data-transformers
-  // This is unique so it can be used for cursor-based pagination
+model Order {
+  id        Int      @id @default(autoincrement())
+  name      String
+  drink     Drink[]
+  submitted Boolean  @default(false)
+  completed Boolean  @default(false)
   createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
-  comment  Comment[]
-}
-
-model Comment {
-  id        String @id @default(uuid())
-  name      String?
-  text      String
-  postId    String
-  post      Post   @relation(fields: [postId], references: [id])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
 }

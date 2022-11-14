@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Drink" ALTER COLUMN "sugar" SET DATA TYPE TEXT;
