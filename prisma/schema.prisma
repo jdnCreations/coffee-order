@@ -14,12 +14,10 @@ model Drink {
   id        Int      @id @default(autoincrement())
   order     Order   @relation(fields: [orderId], references: [id])
   orderId   Int     
-  name      String
   type      String
   milk      String
   size      String
   sugar     String
-  completed Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   deletedAt DateTime?

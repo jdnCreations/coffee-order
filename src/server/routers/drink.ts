@@ -4,13 +4,23 @@ import { prisma } from '~/server/prisma';
 
 export const drinksRouter = router({
   all: publicProcedure.query(async () => {
-    const items = await prisma.drink.findMany({
-      where: {
-        completed: false,
-      },
-    });
+    const items = await prisma.drink.findMany({});
     return items;
   }),
+  byOrderId: publicProcedure
+    .input(
+      z.object({
+        orderId: z.number(),
+      }),
+    )
+    .query(async ({ input }) => {
+      const items = await prisma.drink.findMany({
+        where: {
+          orderId: input.orderId,
+        },
+      });
+      return items;
+    }),
   byId: publicProcedure
     .input(
       z.object({
@@ -28,7 +38,6 @@ export const drinksRouter = router({
   create: publicProcedure
     .input(
       z.object({
-        name: z.string(),
         orderId: z.number(),
         type: z.string(),
         size: z.string(),
@@ -39,29 +48,11 @@ export const drinksRouter = router({
     .mutation(async ({ input }) => {
       const item = await prisma.drink.create({
         data: {
-          name: input.name,
           orderId: input.orderId,
           type: input.type,
           size: input.size,
           milk: input.milk,
           sugar: input.sugar,
-        },
-      });
-      return item;
-    }),
-  markAsComplete: publicProcedure
-    .input(
-      z.object({
-        id: z.number(),
-      }),
-    )
-    .mutation(async ({ input }) => {
-      const item = await prisma.drink.update({
-        where: {
-          id: input.id,
-        },
-        data: {
-          completed: true,
         },
       });
       return item;

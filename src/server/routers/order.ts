@@ -32,7 +32,40 @@ export const ordersRouter = router({
       });
       return item;
     }),
-
+  markAsComplete: publicProcedure
+    .input(
+      z.object({
+        id: z.number(),
+      }),
+    )
+    .mutation(async ({ input }) => {
+      const item = await prisma.order.update({
+        where: {
+          id: input.id,
+        },
+        data: {
+          completed: true,
+        },
+      });
+      return item;
+    }),
+  confirm: publicProcedure
+    .input(
+      z.object({
+        id: z.number(),
+      }),
+    )
+    .mutation(async ({ input }) => {
+      const item = await prisma.order.update({
+        where: {
+          id: input.id,
+        },
+        data: {
+          submitted: true,
+        },
+      });
+      return item;
+    }),
   all: publicProcedure.query(async () => {
     const items = await prisma.order.findMany();
     return items;
@@ -41,6 +74,7 @@ export const ordersRouter = router({
     const items = await prisma.order.findMany({
       where: {
         submitted: true,
+        completed: false,
       },
     });
     return items;

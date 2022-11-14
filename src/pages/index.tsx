@@ -1,9 +1,6 @@
 import { trpc } from '../utils/trpc';
 import { NextPageWithLayout } from './_app';
-import { inferProcedureInput } from '@trpc/server';
-import Link from 'next/link';
-import { Fragment, useState } from 'react';
-import type { AppRouter } from '~/server/routers/_app';
+import { useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 
 enum DrinkType {
@@ -42,14 +39,11 @@ const IndexPage: NextPageWithLayout = () => {
   const { register, handleSubmit } = useForm<IFormInput>();
   const utils = trpc.useContext();
 
-  const [orderId, setOrderId] = useState<number>();
-  const [orderersName, setOrderersName] = useState<string>();
+  const [orderId, setOrderId] = useState<number>(-1);
+  // const [orderersName, setOrderersName] = useState<string>();
 
   const createOrder = trpc.orders.create.useMutation({
-    onSuccess: (data) => {
-      setOrderId(data.id);
-      console.log(data.id);
-    },
+    onSuccess: (data) => setOrderId(data.id),
   });
 
   const addDrink = trpc.drink.create.useMutation({
@@ -58,11 +52,17 @@ const IndexPage: NextPageWithLayout = () => {
     },
   });
 
+  const confirmOrder = trpc.orders.confirm.useMutation({
+    async onSuccess() {
+      await utils.orders.all.invalidate();
+      console.log('order confirmed');
+    },
+  });
+
   const onSubmit: SubmitHandler<IFormInput> = (data) => {
     if (!orderId) return console.log('NO ORDER ID');
 
     addDrink.mutate({
-      name: orderersName as string,
       orderId: orderId as number,
       type: data.drinkType,
       size: data.size,
@@ -72,8 +72,12 @@ const IndexPage: NextPageWithLayout = () => {
   };
 
   const customerName: SubmitHandler<IFormInput> = (data) => {
-    setOrderersName(data.name);
+    // setOrderersName(data.name);
     createOrder.mutate({ name: data.name });
+  };
+
+  const confirm = () => {
+    confirmOrder.mutate({ id: orderId });
   };
 
   return (
@@ -84,7 +88,9 @@ const IndexPage: NextPageWithLayout = () => {
 
       <h2>Your current order</h2>
 
-      {!orderId && (
+      <button onClick={confirm}>Confirm Order</button>
+
+      {orderId == -1 && (
         <>
           <h3>Create an Order</h3>
           <form onSubmit={handleSubmit(customerName)}>
@@ -95,7 +101,7 @@ const IndexPage: NextPageWithLayout = () => {
         </>
       )}
 
-      {orderId && (
+      {orderId != -1 && (
         <form onSubmit={handleSubmit(onSubmit)}>
           <label htmlFor="drinkType">Drink Type</label>
           <select {...register('drinkType')}>
