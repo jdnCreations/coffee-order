@@ -42,6 +42,7 @@ export const drinksRouter = router({
         type: z.string(),
         size: z.string(),
         milk: z.string(),
+        toppedUp: z.string(),
         sugar: z.string(),
       }),
     )
@@ -52,7 +53,33 @@ export const drinksRouter = router({
           type: input.type,
           size: input.size,
           milk: input.milk,
+          toppedUp: input.toppedUp,
           sugar: input.sugar,
+        },
+      });
+      await prisma.order.update({
+        where: {
+          id: input.orderId,
+        },
+        data: {
+          drinksInOrder: {
+            increment: 1,
+          },
+        },
+      });
+
+      return item;
+    }),
+  delete: publicProcedure
+    .input(
+      z.object({
+        id: z.number(),
+      }),
+    )
+    .mutation(async ({ input }) => {
+      const item = await prisma.drink.delete({
+        where: {
+          id: input.id,
         },
       });
       return item;

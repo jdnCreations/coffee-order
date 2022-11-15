@@ -66,6 +66,23 @@ export const ordersRouter = router({
       });
       return item;
     }),
+  hasDrink: publicProcedure
+    .input(
+      z.object({
+        id: z.number(),
+      }),
+    )
+    .query(async ({ input }) => {
+      const item = await prisma.order.findUnique({
+        where: {
+          id: input.id,
+        },
+      });
+      if (!item) {
+        return false;
+      }
+      return item?.drinksInOrder > 0;
+    }),
   all: publicProcedure.query(async () => {
     const items = await prisma.order.findMany();
     return items;

@@ -17,6 +17,7 @@ model Drink {
   type      String
   milk      String
   size      String
+  toppedUp  String
   sugar     String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -27,6 +28,7 @@ model Order {
   id        Int      @id @default(autoincrement())
   name      String
   drink     Drink[]
+  drinksInOrder Int @default(0)
   submitted Boolean  @default(false)
   completed Boolean  @default(false)
   createdAt DateTime @default(now())
