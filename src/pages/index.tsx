@@ -2,8 +2,6 @@ import { trpc } from '../utils/trpc';
 import { NextPageWithLayout } from './_app';
 import { useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import { OrderLayout } from '~/components/OrderLayout';
-import { Order } from '@prisma/client';
 import CustomerSection from '~/components/CustomerSection';
 
 enum DrinkType {
@@ -54,10 +52,6 @@ const IndexPage: NextPageWithLayout = () => {
 
   const [orderId, setOrderId] = useState<number>(-1);
 
-  const currentOrder = trpc.orders.byId.useQuery({ id: orderId });
-
-  const [orderersName, setOrderersName] = useState<string>();
-
   const createOrder = trpc.orders.create.useMutation({
     onSuccess: (data) => setOrderId(data.id),
   });
@@ -82,7 +76,6 @@ const IndexPage: NextPageWithLayout = () => {
   };
 
   const customerName: SubmitHandler<IFormInput> = (data) => {
-    setOrderersName(data.name);
     createOrder.mutate({ name: data.name });
   };
 
@@ -122,7 +115,7 @@ const IndexPage: NextPageWithLayout = () => {
         >
           <label htmlFor="drinkType">Drink Type</label>
           <select
-            className="w-1/4 text-center border-2 hover:border-gray-800 rounded-md"
+            className="w-1/4 text-center border-2 hover:border-gray-800 rounded-md py-2 text-lg"
             {...register('drinkType')}
           >
             <option value={DrinkType.flatwhite}>Flat White</option>
@@ -136,7 +129,7 @@ const IndexPage: NextPageWithLayout = () => {
           </select>
           <label htmlFor="size">Size</label>
           <select
-            className="w-1/4 text-center border-2 hover:border-gray-800 rounded-md"
+            className="w-1/4 text-center border-2 hover:border-gray-800 rounded-md py-2 text-lg"
             {...register('size')}
           >
             <option value={Size.small}>Small</option>
@@ -145,7 +138,7 @@ const IndexPage: NextPageWithLayout = () => {
           </select>
           <label htmlFor="milk">Milk</label>
           <select
-            className="w-1/4 text-center border-2 hover:border-gray-800 rounded-md"
+            className="w-1/4 text-center border-2 hover:border-gray-800 rounded-md py-2 text-lg"
             {...register('milk')}
           >
             <option value={Milk.whole}>Whole</option>
@@ -157,7 +150,7 @@ const IndexPage: NextPageWithLayout = () => {
           </select>
           <label htmlFor="toppedUp">Topped Up</label>
           <select
-            className="w-1/4 text-center border-2 hover:border-gray-800 rounded-md"
+            className="w-1/4 text-center border-2 hover:border-gray-800 rounded-md py-2 text-lg"
             {...register('toppedUp')}
           >
             <option value={ToppedUp.full}>Full</option>
@@ -168,12 +161,12 @@ const IndexPage: NextPageWithLayout = () => {
 
           <label htmlFor="sugar">Sugar</label>
           <input
-            className="w-1/4 text-center border-2 hover:border-gray-800 rounded-md"
+            className="w-1/4 text-center border-2 hover:border-gray-800 rounded-md py-2 text-lg"
             {...register('sugar')}
             type="number"
           />
           <button
-            className="rounded-md border-2 w-1/4 py-2 my-2 bg-white hover:border-green-500"
+            className="rounded-md border-2 w-1/4 my-2 bg-white hover:border-green-500 py-2 text-lg"
             type="submit"
           >
             Add to Order

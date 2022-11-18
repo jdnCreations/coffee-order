@@ -32,6 +32,25 @@ export const ordersRouter = router({
       });
       return item;
     }),
+  decrement: publicProcedure
+    .input(
+      z.object({
+        id: z.number(),
+      }),
+    )
+    .mutation(async ({ input }) => {
+      const item = await prisma.order.update({
+        where: {
+          id: input.id,
+        },
+        data: {
+          drinksInOrder: {
+            decrement: 1,
+          },
+        },
+      });
+      return item;
+    }),
   markAsComplete: publicProcedure
     .input(
       z.object({
@@ -92,6 +111,9 @@ export const ordersRouter = router({
       where: {
         submitted: true,
         completed: false,
+        drinksInOrder: {
+          gt: 0,
+        },
       },
     });
     return items;

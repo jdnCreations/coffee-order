@@ -1,27 +1,30 @@
-import { useRouter } from 'next/router';
-import { router } from '~/server/trpc';
 import { trpc } from '~/utils/trpc';
-import { OrderProps } from './OrderLayout';
 
-const CustomersCurrentOrder = ({ orderInfo }: OrderProps) => {
+const CustomersCurrentOrder = ({
+  orderInfo,
+}: {
+  orderInfo: { id: number; name: string };
+}) => {
   const drinks = trpc.drink.byOrderId.useQuery({ orderId: orderInfo.id });
-  const router = useRouter();
   const utils = trpc.useContext();
 
-  const refreshData = async () => {
-    router.replace(router.asPath);
-  };
+  // TODO: Refresh order when new drink is added
 
   const deleteDrink = trpc.drink.delete.useMutation({
     async onSuccess() {
-      await utils.orders.byId.invalidate({ id: orderInfo.id }).then(() => {
-        refreshData();
-      });
+      await utils.orders.byId.invalidate({ id: orderInfo.id });
     },
   });
 
-  const deleteDrinkById = (id: number) => {
+  const updateOrder = trpc.orders.decrement.useMutation({
+    async onSuccess() {
+      await utils.orders.byId.invalidate({ id: orderInfo.id });
+    },
+  });
+
+  const deleteDrinkById = (id: number, orderId: number) => {
     deleteDrink.mutate({ id });
+    updateOrder.mutate({ id: orderId });
   };
 
   return (
@@ -35,10 +38,11 @@ const CustomersCurrentOrder = ({ orderInfo }: OrderProps) => {
           <p className="px-2">{drink.size}</p>
           <p className="px-2">{drink.milk}</p>
           <p className="px-2">{drink.type}</p>
+          <p className="border rounded-full px-4 py-2">^{drink.toppedUp}</p>
           <p className="border rounded-full px-4 py-2">{drink.sugar}</p>
           <button
             className="border  px-2 rounded-md py-1 border-red-500 hover:bg-red-500 hover:text-white"
-            onClick={() => deleteDrinkById(drink.id)}
+            onClick={() => deleteDrinkById(drink.id, drink.orderId)}
           >
             Remove
           </button>
