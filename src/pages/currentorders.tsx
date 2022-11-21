@@ -14,9 +14,7 @@ const CurrentOrders: NextPageWithLayout = () => {
 
   // when order is marked as complete, refresh the page
   function refreshOrders() {
-    console.log('Should be refreshing orders');
     refetch().then((data) => {
-      console.log('setting data');
       setOrders(data.data);
     });
   }
